@@ -1,0 +1,123 @@
+[project]
+name = "google-drive-model"
+version = "0.1.0"
+description = "Pydantic models for Google Drive and Google Sheets"
+readme = "README.md"
+authors = [
+    { name = "Yotam Manor" }
+]
+requires-python = ">=3.10"
+license = "MIT"
+keywords = [
+    "google-drive",
+    "google-sheets",
+    "orm",
+    "odm",
+    "pydantic",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Framework :: Pydantic :: 2",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Typing :: Typed",
+]
+dependencies = [
+    "google-api-python-client>=2.160.0",
+    "google-auth>=2.37.0",
+    "google-auth-httplib2>=0.2.0",
+    "pydantic>=2.10.0",
+    "rich>=13.9.0",
+    "typer>=0.15.0",
+    "typing-extensions>=4.12.0; python_version < '3.11'",
+]
+
+[project.optional-dependencies]
+oauth = ["google-auth-oauthlib>=1.2.1"]
+yaml = ["pyyaml>=6.0.2"]
+
+[project.scripts]
+gdm = "gdm.cli:app"
+
+[project.urls]
+Documentation = "https://yotammanor.github.io/gdm/"
+Issues = "https://github.com/yotammanor/gdm/issues"
+Repository = "https://github.com/yotammanor/gdm"
+
+[build-system]
+requires = ["uv_build>=0.10.6,<0.11.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "google-auth-oauthlib>=1.2.1",
+    "mkdocs-material>=9.6.0",
+    "mkdocstrings[python]>=0.28.0",
+    "pytest>=8.3.0",
+    "pytest-cov>=6.0.0",
+    "pytest-mock>=3.14.0",
+    "ruff>=0.11.0",
+    "ty>=0.0.1a18",
+]
+
+[tool.uv.build-backend]
+module-name = "gdm"
+
+[tool.pytest.ini_options]
+addopts = [
+    "--strict-config",
+    "--strict-markers",
+    "-ra",
+]
+testpaths = ["tests"]
+markers = [
+    "live: uses a real Google Drive account",
+]
+
+[tool.coverage.run]
+branch = true
+source = ["gdm"]
+
+[tool.coverage.report]
+exclude_also = [
+    "if TYPE_CHECKING:",
+    "raise NotImplementedError",
+]
+fail_under = 90
+show_missing = true
+
+[tool.ruff]
+line-length = 88
+target-version = "py310"
+
+[tool.ruff.lint]
+select = [
+    "A",
+    "ANN",
+    "B",
+    "C4",
+    "E",
+    "F",
+    "I",
+    "N",
+    "PIE",
+    "PT",
+    "RUF",
+    "SIM",
+    "UP",
+]
+ignore = [
+    "ANN401",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = ["ANN"]
+
+[tool.ruff.format]
+docstring-code-format = true
