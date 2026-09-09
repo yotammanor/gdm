@@ -1,0 +1,152 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  secrets:
+    name: Secret scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run gitleaks
+        uses: gitleaks/gitleaks-action@v2.3.9
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_CONFIG: .github/gitleaks.toml
+
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Set up Python
+        run: uv python install 3.12
+
+      - name: Sync dependencies
+        run: uv sync --all-groups --frozen
+
+      - name: Verify lockfile
+        run: uv lock --check
+
+      - name: Ruff check
+        run: uv run ruff check .
+
+      - name: Ruff format
+        run: uv run ruff format --check .
+
+      - name: Ruff check docs examples
+        run: uv run ruff check docs_src
+
+      - name: ty
+        run: uv run ty check
+
+  test:
+    name: Test (${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    env:
+      UV_PYTHON: ${{ matrix.python-version }}
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12", "3.13", "3.14"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Set up Python
+        run: uv python install ${{ matrix.python-version }}
+
+      - name: Sync dependencies
+        run: uv sync --all-groups --frozen
+
+      - name: Verify matrix interpreter
+        run: >-
+          uv run python -c
+          "import sys; expected=tuple(map(int, '${{ matrix.python-version }}'.split('.')));
+          assert sys.version_info[:2] == expected, (sys.version, expected)"
+
+      - name: Run tests with coverage
+        run: uv run pytest --cov=gdm --cov-report=term-missing
+
+  build:
+    name: Build package
+    runs-on: ubuntu-latest
+    needs: [secrets, lint, test]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Set up Python
+        run: uv python install 3.12
+
+      - name: Sync build checks
+        run: uv sync --all-groups --frozen
+
+      - name: Build sdist and wheel
+        run: uv build
+
+      - name: Validate package metadata
+        run: uv run twine check dist/*
+
+      - name: Smoke-test built wheel
+        run: |
+          uv venv "${RUNNER_TEMP}/gdm-wheel" --python 3.12
+          uv pip install --python "${RUNNER_TEMP}/gdm-wheel/bin/python" dist/*.whl
+          "${RUNNER_TEMP}/gdm-wheel/bin/python" -c "import gdm; print(gdm.__version__)"
+          "${RUNNER_TEMP}/gdm-wheel/bin/gdm" --help
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+          if-no-files-found: error
+
+  docs:
+    name: Docs (strict)
+    runs-on: ubuntu-latest
+    needs: [lint, test]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Set up Python
+        run: uv python install 3.12
+
+      - name: Sync dependencies
+        run: uv sync --all-groups --frozen
+
+      - name: Build documentation
+        run: uv run mkdocs build --strict

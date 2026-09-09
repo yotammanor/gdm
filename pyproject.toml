@@ -1,12 +1,12 @@
 [project]
 name = "google-drive-model"
 version = "0.1.0"
-description = "Pydantic models for Google Drive and Google Sheets"
+description = "Pydantic models and a SQLModel-inspired API for Google Drive and Sheets"
 readme = "README.md"
 authors = [
     { name = "Yotam Manor" }
 ]
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 license = "MIT"
 keywords = [
     "google-drive",
@@ -21,7 +21,6 @@ classifiers = [
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
@@ -35,7 +34,6 @@ dependencies = [
     "pydantic>=2.10.0",
     "rich>=13.9.0",
     "typer>=0.15.0",
-    "typing-extensions>=4.12.0; python_version < '3.11'",
 ]
 
 [project.optional-dependencies]
@@ -46,6 +44,7 @@ yaml = ["pyyaml>=6.0.2"]
 gdm = "gdm.cli:app"
 
 [project.urls]
+Changelog = "https://github.com/yotammanor/gdm/blob/main/CHANGELOG.md"
 Documentation = "https://yotammanor.github.io/gdm/"
 Issues = "https://github.com/yotammanor/gdm/issues"
 Repository = "https://github.com/yotammanor/gdm"
@@ -59,10 +58,12 @@ dev = [
     "google-auth-oauthlib>=1.2.1",
     "mkdocs-material>=9.6.0",
     "mkdocstrings[python]>=0.28.0",
+    "pyyaml>=6.0.2",
     "pytest>=8.3.0",
     "pytest-cov>=6.0.0",
     "pytest-mock>=3.14.0",
     "ruff>=0.11.0",
+    "twine>=6.1.0",
     "ty>=0.0.1a18",
 ]
 
@@ -94,7 +95,7 @@ show_missing = true
 
 [tool.ruff]
 line-length = 88
-target-version = "py310"
+target-version = "py311"
 
 [tool.ruff.lint]
 select = [
@@ -117,7 +118,24 @@ ignore = [
 ]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/**/*.py" = ["ANN"]
+"tests/**/*.py" = ["ANN", "SIM117"]
+"tests/test_structured_codecs.py" = ["ANN", "SIM117"]
+"tests/test_google_api_extra.py" = ["N802"]
+"src/gdm/google_api.py" = ["N802", "N803", "A002"]
+"src/gdm/auth.py" = ["N806"]
+"src/gdm/errors.py" = ["N818"]
+"src/gdm/backends/drive.py" = ["N803"]
+"src/gdm/backends/sheets.py" = ["N803", "A002", "N802"]
+"src/gdm/permissions.py" = ["N803"]
+"src/gdm/sync.py" = ["N803", "N802"]
+"src/gdm/project.py" = ["N803"]
+"src/gdm/fields.py" = ["A002"]
+"src/gdm/collection/metadata.py" = ["N803"]
+"tests/collection_fakes.py" = ["N802", "N803", "SIM102"]
+"tests/fakes.py" = ["N802", "N803", "A002", "SIM102", "E501"]
 
 [tool.ruff.format]
 docstring-code-format = true
+
+[tool.ty.src]
+include = ["src"]

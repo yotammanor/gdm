@@ -1,0 +1,66 @@
+name: Live tests
+
+on:
+  workflow_dispatch:
+    inputs:
+      project_root:
+        description: Drive root folder ID for live tests
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: live-tests
+  cancel-in-progress: false
+
+jobs:
+  live:
+    name: Live Google API tests
+    runs-on: ubuntu-latest
+    env:
+      GDM_LIVE: "1"
+      GDM_TEST_ROOT_FOLDER_ID: ${{ inputs.project_root }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Set up Python
+        run: uv python install 3.12
+
+      - name: Sync dependencies
+        run: uv sync --all-groups --frozen
+
+      - name: Configure Google credentials
+        env:
+          GDM_OAUTH_TOKEN: ${{ secrets.GDM_OAUTH_TOKEN }}
+          GDM_GCP_KEY: ${{ secrets.GDM_GCP_KEY }}
+        run: |
+          if [ -n "${GDM_OAUTH_TOKEN}" ]; then
+            token_path="${RUNNER_TEMP}/gdm-token.json"
+            printf '%s' "${GDM_OAUTH_TOKEN}" > "${token_path}"
+            chmod 600 "${token_path}"
+            echo "GDM_TEST_TOKEN_PATH=${token_path}" >> "${GITHUB_ENV}"
+          elif [ -n "${GDM_GCP_KEY}" ]; then
+            key_path="${RUNNER_TEMP}/gcp-key.json"
+            printf '%s' "${GDM_GCP_KEY}" > "${key_path}"
+            chmod 600 "${key_path}"
+            echo "GDM_TEST_SERVICE_ACCOUNT_FILE=${key_path}" >> "${GITHUB_ENV}"
+          else
+            echo "Set GDM_OAUTH_TOKEN or GDM_GCP_KEY for live tests" >&2
+            exit 1
+          fi
+
+      - name: Run live tests
+        run: uv run pytest -m live -v
+
+      - name: Remove credentials
+        if: always()
+        run: |
+          rm -f "${RUNNER_TEMP}/gdm-token.json"
+          rm -f "${RUNNER_TEMP}/gcp-key.json"

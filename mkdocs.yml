@@ -1,0 +1,141 @@
+site_name: Google Drive Model
+site_url: https://yotammanor.github.io/gdm/
+site_description: Pydantic models and a SQLModel-inspired session for Google Drive and Google Sheets.
+site_author: Yotam Manor
+repo_name: yotammanor/gdm
+repo_url: https://github.com/yotammanor/gdm
+edit_uri: edit/main/docs/
+
+copyright: Copyright &copy; 2026 Yotam Manor
+
+theme:
+  name: material
+  language: en
+  logo: assets/logo.svg
+  favicon: assets/favicon.svg
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: teal
+      accent: amber
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: teal
+      accent: amber
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - content.code.copy
+    - content.code.annotate
+    - content.tabs.link
+    - navigation.footer
+    - navigation.indexes
+    - navigation.instant
+    - navigation.path
+    - navigation.sections
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.top
+    - search.highlight
+    - search.share
+    - toc.follow
+
+plugins:
+  - search
+  - mkdocstrings:
+      default_handler: python
+      handlers:
+        python:
+          options:
+            docstring_style: google
+            show_root_heading: true
+            show_source: false
+            members_order: source
+            separate_signature: true
+            show_signature_annotations: true
+            paths: [src]
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets:
+      base_path:
+        - docs_src
+      check_paths: true
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - toc:
+      permalink: true
+
+nav:
+  - Home: index.md
+  - Get started:
+      - Introduction: introduction.md
+      - Installation: installation.md
+      - Authentication: auth.md
+  - Tutorial:
+      - Overview: tutorial/index.md
+      - Drive collections: tutorial/collection.md
+      - Sheet tables: tutorial/sheets.md
+  - Adopt existing data:
+      - Drive folders: adoption/drive-collections.md
+      - Existing spreadsheets: adoption/existing-sheet.md
+      - Drive documents (redirect): adoption/drive-documents.md
+  - Storage:
+      - Drive collections: storage/collections.md
+      - Sheets as tables: storage/sheets.md
+      - Relationships: storage/relationships.md
+      - Document storage (redirect): storage/documents.md
+  - Exploration & inference:
+      - Explore your Drive: exploration/index.md
+      - Model inference: exploration/inference.md
+  - Migrations:
+      - Overview: migrations/index.md
+      - Schema drift: migrations/drift.md
+  - Performance:
+      - Indexes: performance/indexes.md
+  - Permissions & tenancy:
+      - Overview: permissions/index.md
+      - Shared drives: permissions/shared-drives.md
+      - Multi-tenancy: permissions/multi-tenancy.md
+  - Consistency & errors: consistency/errors.md
+  - CLI: cli/index.md
+  - Terminal demo: assets/terminal-demo.md
+  - API reference: api/index.md
+  - Design decisions: design.md
+  - Contributing:
+      - Development: contributing/index.md
+      - Testing: testing.md
+      - Releasing: contributing/releasing.md
+      - Implementation acceptance: implementation-plan.md
+      - Changelog: changelog.md
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/yotammanor/gdm
+
+extra_css:
+  - assets/extra.css
+
+strict: true

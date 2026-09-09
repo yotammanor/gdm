@@ -1,0 +1,19 @@
+.site-header {
+  font-weight: 600;
+}
+
+.md-typeset .admonition.platform-limit,
+.md-typeset details.platform-limit {
+  border-color: rgb(255, 183, 77);
+}
+
+.md-typeset .admonition.platform-limit > .admonition-title,
+.md-typeset details.platform-limit > summary {
+  background-color: rgba(255, 183, 77, 0.1);
+}
+
+.terminal-poster {
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: 0.4rem;
+  max-width: 100%;
+}

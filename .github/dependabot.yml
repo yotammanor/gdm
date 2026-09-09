@@ -1,0 +1,28 @@
+version: 2
+
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      github-actions:
+        patterns:
+          - "*"
+
+  - package-ecosystem: uv
+    directory: /
+    schedule:
+      interval: weekly
+    ignore:
+      # ty is pinned to pre-release tags in dev group
+      - dependency-name: ty
+    groups:
+      google-clients:
+        patterns:
+          - google-*
+      dev-tools:
+        patterns:
+          - ruff
+          - pytest*
+          - mkdocs*

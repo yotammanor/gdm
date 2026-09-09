@@ -1,0 +1,12 @@
+title = "GDM gitleaks config"
+
+[extend]
+useDefault = true
+
+# Generated demo assets may contain synthetic IDs that resemble tokens.
+# Exclude only committed demo artifacts — never source, tests, or credentials.
+[allowlist]
+paths = [
+  '''docs/assets/demo\.cast$''',
+  '''docs/assets/demo-sample\.json$''',
+]

@@ -1,0 +1,125 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Verify and build release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Set up Python
+        run: uv python install 3.12
+
+      - name: Sync locked dependencies
+        run: uv sync --all-groups --frozen
+
+      - name: Verify tag matches package version
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          uv run python - <<'PY'
+          import os
+          import tomllib
+          from pathlib import Path
+
+          version = tomllib.loads(Path("pyproject.toml").read_text())["project"]["version"]
+          expected = f"v{version}"
+          actual = os.environ["RELEASE_TAG"]
+          if actual != expected:
+              raise SystemExit(f"tag {actual!r} does not match package version {expected!r}")
+          PY
+
+      - name: Run release gates
+        run: |
+          uv run ruff check .
+          uv run ruff format --check .
+          uv run ruff check docs_src
+          uv run ty check
+          uv run pytest --cov=gdm --cov-report=term-missing
+          uv run mkdocs build --strict
+
+      - name: Build distributions
+        run: uv build
+
+      - name: Validate distributions
+        run: uv run twine check dist/*
+
+      - name: Smoke-test wheel
+        run: |
+          uv venv "${RUNNER_TEMP}/gdm-release" --python 3.12
+          uv pip install --python "${RUNNER_TEMP}/gdm-release/bin/python" dist/*.whl
+          "${RUNNER_TEMP}/gdm-release/bin/python" -c "import gdm; print(gdm.__version__)"
+          "${RUNNER_TEMP}/gdm-release/bin/gdm" --help
+
+      - name: Record SHA-256 hashes
+        run: sha256sum dist/* > SHA256SUMS
+
+      - name: Upload release artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-artifacts
+          path: |
+            dist/
+            SHA256SUMS
+          if-no-files-found: error
+
+  publish-pypi:
+    name: Publish to PyPI
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/google-drive-model
+    permissions:
+      id-token: write
+    steps:
+      - name: Download release artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: release-artifacts
+
+      - name: Publish distributions
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: dist/
+
+  github-release:
+    name: Create GitHub release
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download release artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: release-artifacts
+
+      - name: Create release and attach artifacts
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >-
+          gh release create "${GITHUB_REF_NAME}"
+          dist/*
+          SHA256SUMS
+          --repo "${GITHUB_REPOSITORY}"
+          --verify-tag
+          --generate-notes
+          --prerelease
