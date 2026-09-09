@@ -6,6 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+
+- `examples/`: whole applications built on GDM, covered by CI without credentials.
+  The first is `examples/fastapi_assets`, a JSON API over a Drive folder showing a
+  session per request, read-only Drive fields, 409 on concurrent Drive edits, and
+  explicit content reads.
+- `examples` dependency group (`fastapi`, `uvicorn`, `httpx2`) for running them.
+
+### Documentation
+
+- README: roadmap and checklist for 0.2, 0.3, and beyond, plus what is out of scope
+  as a platform limit rather than a backlog item.
+
 ## [0.1.2] - 2026-09-09
 
 ### Changed

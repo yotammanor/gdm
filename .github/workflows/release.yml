@@ -52,7 +52,7 @@ jobs:
           uv run ruff format --check .
           uv run ruff check docs_src
           uv run ty check
-          uv run pytest --cov=gdm --cov-report=term-missing
+          uv run --all-groups pytest --cov=gdm --cov-report=term-missing
           uv run mkdocs build --strict
 
       - name: Build distributions

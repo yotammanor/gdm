@@ -4,7 +4,7 @@ This plan turns the decisions in [the design](design.md) into verifiable
 deliverables. User-facing walkthroughs: [tutorial](tutorial/index.md),
 [collections](tutorial/collection.md), [API reference](api/index.md).
 
-## Release status (v0.1.0)
+## Release status (v0.1.2)
 
 | Milestone | Status |
 | --- | --- |
@@ -147,8 +147,13 @@ Acceptance:
   permissions, shared drives, and multi-root projects.
 - [x] Record the final working CLI demo from actual commands; keep the `.cast` and
   regeneration script (`docs/assets/regenerate-demo.sh`).
-- [ ] Pass Ruff, formatting, ty, pytest with the configured coverage threshold,
+- [x] Pass Ruff, formatting, ty, pytest with the configured coverage threshold,
   package build, strict docs build, and secret scans on CI for the release tag.
-- [ ] Run the live suite against the dedicated OAuth account and verify cleanup.
-- [ ] Push to `main`, enable GitHub Pages (GitHub Actions source), verify public URL.
-- [ ] Publish `google-drive-model` v0.1.0 to PyPI when requested.
+- [x] Run the live suite against the dedicated OAuth account and verify cleanup.
+- [x] Push to `main`, enable GitHub Pages (GitHub Actions source), verify public URL.
+- [x] Publish `google-drive-model` to PyPI.
+- [x] Ship a full example application exercised by CI without credentials
+  (`examples/fastapi_assets`).
+
+Work beyond this plan is tracked as the [roadmap](https://github.com/yotammanor/gdm#roadmap)
+in the README.

@@ -78,6 +78,9 @@ builds on this same model.
 1. [Install](installation.md) the package.
 2. [Authenticate](auth.md) with OAuth, ADC, or a service account.
 3. Follow the [Drive collections tutorial](tutorial/collection.md) or [adopt a sheet](adoption/existing-sheet.md).
+4. Read a whole app: the [FastAPI example](https://github.com/yotammanor/gdm/tree/main/examples/fastapi_assets)
+   serves a Drive folder as a JSON API and runs offline against seeded data.
+   Where GDM is headed next is on the [roadmap](https://github.com/yotammanor/gdm#roadmap).
 
 ## Terminal demo
 

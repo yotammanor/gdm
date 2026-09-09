@@ -90,7 +90,7 @@ jobs:
           assert sys.version_info[:2] == expected, (sys.version, expected)"
 
       - name: Run tests with coverage
-        run: uv run pytest --cov=gdm --cov-report=term-missing
+        run: uv run --all-groups pytest --cov=gdm --cov-report=term-missing
 
   build:
     name: Build package

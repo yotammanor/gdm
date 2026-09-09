@@ -16,7 +16,7 @@ Thank you for your interest in **Google Drive Model** (import name: `gdm`).
 4. Run the test suite:
 
    ```console
-   uv run pytest --cov=gdm --cov-report=term-missing
+   uv run --all-groups pytest --cov=gdm --cov-report=term-missing
    ```
 
 ## Development workflow
@@ -35,7 +35,7 @@ Before opening a PR, run:
 uv run ruff check .
 uv run ruff format --check .
 uv run ty check
-uv run pytest --cov=gdm --cov-report=term-missing
+uv run --all-groups pytest --cov=gdm --cov-report=term-missing
 uv run mkdocs build --strict
 ```
 
@@ -53,6 +53,10 @@ uv run mkdocs serve --strict
 Runnable snippets belong in `docs_src/` and are included with
 [`--8<--`](https://facelessuser.github.io/pymdown-extensions/extensions/snippets/)
 or copied into pages with clear context.
+
+Whole applications belong in `examples/`. They depend on the `examples`
+dependency group, which `uv run` skips unless you pass `--all-groups`, and each
+one needs a test under `tests/` that runs it without Google credentials.
 
 Architecture decisions are recorded in [`docs/design.md`](docs/design.md).
 Update that document only for significant design changes.

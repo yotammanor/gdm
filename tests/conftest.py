@@ -11,6 +11,11 @@ SRC = ROOT / "src"
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
+# Examples ship as importable packages so the suite can exercise them.
+EXAMPLES = ROOT / "examples"
+if str(EXAMPLES) not in sys.path:
+    sys.path.insert(0, str(EXAMPLES))
+
 # Typer forces a colour terminal whenever GITHUB_ACTIONS/FORCE_COLOR/PY_COLORS is
 # set, so CLI output carries ANSI escapes on CI but not locally, and rich wraps
 # help text to the ambient width. Both make plain substring assertions on command
