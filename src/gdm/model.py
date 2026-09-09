@@ -175,8 +175,7 @@ class GDMModel(BaseModel, metaclass=GDMModelMetaclass):
         cls.__gdm_source__ = source
         cls.__gdm_collection__ = collection
         if mime is None:
-            if "__gdm_mime_patterns__" not in cls.__dict__:
-                cls.__gdm_mime_patterns__ = ()
+            pass  # inherit the base model's patterns, or the class namespace value
         elif isinstance(mime, str):
             cls.__gdm_mime_patterns__ = (mime,)
         else:

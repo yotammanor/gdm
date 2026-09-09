@@ -52,7 +52,9 @@ def test_demo_cast_has_no_stale_source_name() -> None:
 def test_demo_gif_is_committed_animation() -> None:
     data = DEMO_GIF.read_bytes()
     assert data.startswith((b"GIF87a", b"GIF89a"))
-    assert len(data) > 10_000
+    # Each frame is introduced by a Graphic Control Extension block, so more
+    # than one means a real recording rather than a single-frame placeholder.
+    assert data.count(b"\x21\xf9\x04") > 1
 
 
 def test_infer_file_cli_emits_public_field_targets() -> None:

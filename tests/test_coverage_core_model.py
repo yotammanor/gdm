@@ -40,15 +40,18 @@ def test_mime_patterns_from_string_and_tuple() -> None:
     assert Many.__gdm_mime_patterns__ == ("a/*", "b/*")
 
 
-def test_subclass_without_mime_resets_patterns_when_not_in_dict() -> None:
+def test_subclass_inherits_mime_patterns() -> None:
     class Base(GDMModel, storage="collection", mime="image/*"):
         name: str
 
     class Child(Base):
         extra: str | None = None
 
-    # Child re-runs __init_subclass__ with mime=None, which clears inherited patterns.
-    assert Child.__gdm_mime_patterns__ == ()
+    class Narrowed(Base, mime="image/png"):
+        pass
+
+    assert Child.__gdm_mime_patterns__ == ("image/*",)
+    assert Narrowed.__gdm_mime_patterns__ == ("image/png",)
 
 
 def test_subclass_inherits_storage_codec_and_mapping() -> None:

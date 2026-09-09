@@ -6,6 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Changed
+
+- `mime=` is now inherited by subclasses, consistent with `storage`, `codec`, and
+  `mapping`. Previously a subclass silently dropped its base model's MIME filters.
+
+### Fixed
+
+- Test suite: CLI output assertions no longer depend on the ambient terminal. Typer
+  forces colour and ambient-width wrapping whenever `GITHUB_ACTIONS`, `FORCE_COLOR`,
+  or `PY_COLORS` is set, so substring assertions passed locally and failed on CI.
+
 ## [0.1.1] - 2026-09-09
 
 ### Added

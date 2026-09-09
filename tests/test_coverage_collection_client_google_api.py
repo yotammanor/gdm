@@ -1,5 +1,4 @@
 """Branch coverage for GDMClient, Project provisioning, and google_api adapters."""
-# ruff: noqa: RUF043
 
 from __future__ import annotations
 
@@ -17,7 +16,7 @@ from gdm.backends.sheets import SheetsBackend
 from gdm.client import GDMClient
 from gdm.collection.constants import FOLDER_MIME
 from gdm.collection.metadata import InMemoryCollectionMetadataStore
-from gdm.errors import ForeignProjectError, GDMError
+from gdm.errors import ForeignProjectError, GDMError, PermissionDeniedError
 from gdm.fields import Field
 from gdm.google_api import (
     DriveExplorerAdapter,
@@ -387,7 +386,7 @@ def test_executing_resource_http_error_normalization() -> None:
 
     resource.get.side_effect = boom
     files = ExecutingDriveFiles(resource)
-    with pytest.raises(Exception, match="403|Permission|denied|Forbidden"):
+    with pytest.raises(PermissionDeniedError):
         files.get(fileId="x", fields="id")
 
 

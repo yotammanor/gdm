@@ -16,6 +16,7 @@ from gdm.backends.sheets import SheetsBackend
 from gdm.client import GDMClient
 from gdm.collection.constants import METADATA_ID_COLUMN, METADATA_VERSION_COLUMN
 from gdm.collection.metadata import InMemoryCollectionMetadataStore
+from gdm.errors import GDMError
 from gdm.google_api import ExecutingDriveService
 from gdm.migration_target import (
     ProductionMigrationTarget,
@@ -399,7 +400,7 @@ def test_production_refuses_drop_system_metadata_column(
     folder_id = production_setup["folder_id"]
     model_name = CollV2.gdm_model_name()
     target.bind_collection(model_name, folder_id=folder_id, collection_path="Assets")
-    with pytest.raises(Exception, match="Refusing to drop required metadata column"):
+    with pytest.raises(GDMError, match="Refusing to drop required metadata column"):
         target.metadata_drop_column(model_name, METADATA_ID_COLUMN)
 
 

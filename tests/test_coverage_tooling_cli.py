@@ -552,10 +552,10 @@ def test_explore_without_collection_candidates(tmp_path: Path) -> None:
         obj=ctx,
     )
     assert result.exit_code == 0
-    assert (
-        "runtime" not in result.output.lower()
-        or "zero content" in result.output.lower()
-    )
+    assert "Explore root" in result.output
+    assert "zero content reads: True" in result.output
+    # A lone text file is not a collection candidate, so that table is omitted.
+    assert "Collection candidates" not in result.output
 
 
 def test_doctor_with_drift_errors_exits(tmp_path: Path) -> None:

@@ -5,7 +5,6 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from click import unstyle
 from typer.testing import CliRunner
 
 from gdm.cli import CLIContext, app
@@ -281,4 +280,4 @@ def test_migrate_plan_help() -> None:
 def test_infer_collection_help() -> None:
     result = runner.invoke(app, ["infer", "collection", "--help"])
     assert result.exit_code == 0
-    assert "--folder-id" in unstyle(result.stdout)
+    assert "--folder-id" in result.stdout
