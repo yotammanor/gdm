@@ -2,15 +2,23 @@
 
 from __future__ import annotations
 
+import tomllib
+from pathlib import Path
+
 import gdm
 from gdm.testing import memory_backend, memory_session, session_context
+
+PYPROJECT = Path(__file__).resolve().parents[1] / "pyproject.toml"
 
 
 def test_public_package_exports() -> None:
     expected = set(gdm.__all__)
     for name in expected:
         assert hasattr(gdm, name), f"missing export {name}"
-    assert gdm.__version__ == "0.1.0"
+    declared = tomllib.loads(PYPROJECT.read_text(encoding="utf-8"))["project"][
+        "version"
+    ]
+    assert gdm.__version__ == declared
 
 
 def test_memory_session_read_only_and_scan_limit() -> None:
