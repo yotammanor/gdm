@@ -23,7 +23,9 @@ returns a [`DriveCollection`](../api/index.md#quick-reference) scoped to that ID
 
 ## 2. Define the model
 
+```python
 --8<-- "models_campaign_asset.py"
+```
 
 | Field target | Maps to |
 | --- | --- |
@@ -34,7 +36,9 @@ Unmodeled direct children remain visible through `assets.inventory()` and are un
 
 ## 3. Query metadata (no body fetch)
 
+```python
 --8<-- "query_basic.py"
+```
 
 ## 4. List, get, and filter
 
@@ -62,7 +66,9 @@ pdfs = assets.where_mime("application/pdf")
 
 ## 5. Membership without silent moves
 
+```python
 --8<-- "collection_operations.py"
+```
 
 | Operation | Effect |
 | --- | --- |
@@ -80,7 +86,9 @@ assets.move("FILE_ID", to_folder_id="ARCHIVE_FOLDER_ID")
 
 ## 6. Native content stays lazy
 
+```python
 --8<-- "collection_content.py"
+```
 
 | MIME family | Content API |
 | --- | --- |
@@ -127,7 +135,9 @@ row remains until you reconcile or repair it explicitly. Run
 
 ## Full quickstart script
 
+```python
 --8<-- "quickstart_collection.py"
+```
 
 ## Next
 

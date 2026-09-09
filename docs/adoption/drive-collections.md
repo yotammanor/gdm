@@ -20,7 +20,9 @@ Pass `--apply` globally to perform remote registry/metadata writes during `adopt
 
 ## Example model
 
+```python
 --8<-- "models_campaign_asset.py"
+```
 
 Use [`DriveObjectMixin`](../api/index.md#quick-reference) to include standard Drive identity fields without boilerplate.
 

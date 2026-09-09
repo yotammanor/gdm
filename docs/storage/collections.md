@@ -82,7 +82,9 @@ For greenfield JSON/text/byte/YAML files in a folder—not native Docs/Slides—
 | `bytes` | Opaque binary | Exactly one `bytes` body field; MIME from `mime=` or `application/octet-stream` |
 | `yaml` | YAML mapping | Same semantics as `json`; requires the `yaml` extra (`google-drive-model[yaml]` on PyPI, or `uv pip install -e ".[yaml]"` from source) |
 
+```python
 --8<-- "models_release_note.py"
+```
 
 Codec models serialize declared fields into the file body on write. GDM stores routing keys in private `appProperties` (`gdm_project`, `gdm_model`, `gdm_id`, optional `gdm_schema`) and scans by those keys. Updates merge routing properties without dropping unrelated `appProperties`. Adopting an existing Google Doc never uses `codec=`.
 
