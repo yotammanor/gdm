@@ -7,20 +7,21 @@ Native Google Docs, Slides, images, PDFs, and uploaded binaries stay **native an
 ## Model layout
 
 ```python
-from gdm import DriveObjectMixin, Field, GDMModel
+from gdm import DriveObject, Field
 
 
 class CampaignAsset(
-    GDMModel,
-    DriveObjectMixin,
-    storage="collection",
+    DriveObject,
     collection="Campaigns/Launch",
-    mapping="partial",
     mime=("application/vnd.google-apps.document", "image/*"),
 ):
     campaign: str | None = Field(default=None, metadata="campaign")
     approved: bool = Field(default=False, metadata="approved")
 ```
+
+`DriveObject` is `GDMModel` + `DriveObjectMixin` + `storage="collection"`. Spell
+those three out only when you need a different combination; subclasses inherit
+`storage`, `codec`, and `mapping` from their base.
 
 | Target | Storage |
 | --- | --- |

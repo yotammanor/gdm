@@ -10,8 +10,9 @@ Public Python surface for **`gdm`** (import name). Distribution package:
 | `GDM` / `GDMClient` | Connect, bind, explore, permissions |
 | `DriveCollection` | Typed folder collection |
 | `ContentHandle` | Lazy native content |
+| `DriveObject` | Collection model base with Drive identity fields |
 | `GDMModel` | Pydantic base with storage metadata |
-| `DriveObjectMixin` | Standard Drive identity fields |
+| `DriveObjectMixin` | Drive identity fields as a standalone mixin |
 | `Field` | Pydantic field + GDM metadata |
 | `Session` | Unit-of-work queries and commits |
 | `select()` | Query builder |
@@ -28,6 +29,7 @@ Public Python surface for **`gdm`** (import name). Distribution package:
         - GDMClient
         - DriveCollection
         - ContentHandle
+        - DriveObject
         - DriveObjectMixin
         - GDMModel
         - Field

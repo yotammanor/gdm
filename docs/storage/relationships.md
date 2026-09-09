@@ -27,15 +27,10 @@ The `customer_id` cell contains the customer's primary key string.
 Collection identity is the Drive file ID. Reference it from sheet rows:
 
 ```python
-from gdm import DriveObjectMixin, Field, GDMModel
+from gdm import DriveObject, Field, GDMModel
 
 
-class CampaignAsset(
-    GDMModel,
-    DriveObjectMixin,
-    storage="collection",
-    mapping="partial",
-):
+class CampaignAsset(DriveObject):
     campaign: str | None = Field(default=None, metadata="campaign")
 
 

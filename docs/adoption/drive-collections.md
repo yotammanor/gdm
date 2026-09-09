@@ -26,7 +26,7 @@ Pass `--apply` globally to perform remote registry/metadata writes during `adopt
 ```
 <!-- fmt:on -->
 
-Use [`DriveObjectMixin`](../api/index.md#quick-reference) to include standard Drive identity fields without boilerplate.
+Subclassing [`DriveObject`](../api/index.md#quick-reference) supplies `storage="collection"` and the standard Drive identity fields, so the model declares only application metadata.
 
 ## Native formats
 

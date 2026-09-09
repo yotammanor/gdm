@@ -46,26 +46,25 @@ The distribution is **`google-drive-model`** because the PyPI name `gdm` belongs
 to another project. After installation you import **`gdm`**:
 
 ```python
-from gdm import GDM, GDMModel, DriveCollection, Field, Session, select
+import gdm
 ```
 
 ## Minimal example
 
+After [authentication](auth.md), map an existing `Assets` folder and list its
+files:
+
 <!-- fmt:off -->
 ```python
---8<-- "quickstart_collection.py"
+--8<-- "minimal_collection.py"
 ```
 <!-- fmt:on -->
 
-Run metadata queries offline without Google credentials (seeded in-memory backend):
-
-```console
-GDM_USE_FAKE=1 python docs_src/quickstart_collection.py
-```
-
-This exercises `select()` / `session.exec()` against seeded `CampaignAsset` rows.
-Full `client.collection()` listing and content handles require a live Drive bind — see
-[Testing](testing.md).
+That is progressive mapping in full: `DriveObject` supplies the native Drive
+fields (`name`, `mime_type`, timestamps, …), file bodies stay lazy behind
+`asset.content`, and you add typed `Field(metadata=...)` columns only when your
+application needs them. The [collections tutorial](tutorial/collection.md)
+builds on this same model.
 
 ## What GDM is not
 

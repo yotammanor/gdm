@@ -27,7 +27,7 @@ from gdm.errors import (
 )
 from gdm.fields import Field, GDMFieldMetadata
 from gdm.indexes import GdmIndexError, IndexStore, StaleIndexError, StalePolicy
-from gdm.model import DriveObjectMixin, GDMModel
+from gdm.model import DriveObject, DriveObjectMixin, GDMModel
 from gdm.project import ResourceKind
 from gdm.query import Select, select
 from gdm.session import Result, Session
@@ -38,6 +38,7 @@ __all__ = [
     "ConflictError",
     "ContentHandle",
     "DriveCollection",
+    "DriveObject",
     "DriveObjectMixin",
     "Field",
     "ForeignProjectError",

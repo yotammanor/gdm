@@ -18,6 +18,7 @@ validated data sources using **Pydantic**—with a session and query style inspi
 | --- | --- |
 | [`GDM`](api/index.md#quick-reference) | Connect to a root-scoped project; bind resources; open collections and sessions |
 | [`DriveCollection[T]`](api/index.md#quick-reference) | Typed view of **direct children** in one Drive folder |
+| [`DriveObject`](api/index.md#quick-reference) | Base class for collection models; adds Drive identity fields |
 | [`GDMModel`](api/index.md#quick-reference) | Pydantic model with `storage`, `collection`, and `mapping` class keywords |
 | [`Field()`](api/index.md#quick-reference) | `drive=`, `metadata=`, sheet `source=`, indexes, foreign keys |
 | [`Session`](api/index.md#quick-reference) | Unit-of-work for sheet rows and collection metadata queries |
@@ -34,7 +35,7 @@ validated data sources using **Pydantic**—with a session and query style inspi
     Sheet under `.gdm/collections/`. See [Drive collections](storage/collections.md).
 
     ```python
-    class Asset(GDMModel, DriveObjectMixin, storage="collection", mapping="partial"):
+    class Asset(DriveObject, collection="Assets"):
         campaign: str | None = Field(default=None, metadata="campaign")
     ```
 

@@ -32,7 +32,8 @@ live paths require credentials or test doubles wired in your own scripts.
 
 | File | Used in | `GDM_USE_FAKE` |
 | --- | --- | --- |
-| `quickstart_collection.py` | `docs/index.md` | Yes (seeded memory backend) |
+| `minimal_collection.py` | Landing page | No (live Drive only) |
+| `quickstart_collection.py` | Collection tutorial | Yes (seeded memory backend) |
 | `quickstart_session.py` | Sheet quickstart / fake runs | Yes |
 | `models_campaign_asset.py` | Collection tutorial, adoption | — |
 | `models_task.py` | Sheet tutorial | — |

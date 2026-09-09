@@ -67,8 +67,27 @@ class GDMModelState:
 class GDMModelMetaclass(ModelMetaclass):
     """Metaclass enabling class-level field expressions."""
 
-    def __getattribute__(cls, name: str) -> Any:  # noqa: N805
-        if not name.startswith("_"):
+    # Depth counter for in-flight class construction. Pydantic reads field
+    # defaults with ``getattr(cls, field_name)`` while collecting fields, so
+    # returning a FieldRef during construction would overwrite the real
+    # FieldInfo contributed by a plain mixin such as DriveObjectMixin.
+    _gdm_building: ClassVar[int] = 0
+
+    def __new__(
+        mcls,
+        name: str,
+        bases: tuple[type, ...],
+        namespace: dict[str, Any],
+        **kwargs: Any,
+    ) -> type:
+        GDMModelMetaclass._gdm_building += 1
+        try:
+            return super().__new__(mcls, name, bases, namespace, **kwargs)
+        finally:
+            GDMModelMetaclass._gdm_building -= 1
+
+    def __getattribute__(cls, name: str) -> Any:
+        if not name.startswith("_") and GDMModelMetaclass._gdm_building == 0:
             try:
                 fields = super().__getattribute__("model_fields")
             except AttributeError:
@@ -118,7 +137,7 @@ class GDMModel(BaseModel, metaclass=GDMModelMetaclass):
         source: str | None = None,
         collection: str | None = None,
         mime: str | tuple[str, ...] | None = None,
-        mapping: MappingMode = "partial",
+        mapping: MappingMode | None = None,
         schema_version: str | int | None = None,
         codec: CodecMode | None = None,
         table: bool = False,
@@ -126,20 +145,28 @@ class GDMModel(BaseModel, metaclass=GDMModelMetaclass):
         **kwargs: Any,
     ) -> None:
         super().__init_subclass__(**kwargs)
-        resolved_storage = storage
-        if storage == "file":
+        # Storage shape (storage/codec/mapping) is inherited when not restated, so
+        # reusable bases such as DriveObject work without repeating keywords.
+        # Resource identity (source/collection/schema_version) stays per-model.
+        redeclares_storage = storage is not None or table
+        resolved_codec = codec
+        if resolved_codec is None and not redeclares_storage:
+            resolved_codec = cls.__gdm_codec__
+        resolved_storage = storage if storage is not None else cls.__gdm_storage__
+        if resolved_storage == "file":
             resolved_storage = "collection"
         if table:
-            if resolved_storage is not None and resolved_storage != "sheet":
+            if storage is not None and storage != "sheet":
                 msg = "table=True is an alias for storage='sheet' and cannot conflict."
                 raise InvalidModelConfigError(msg)
             resolved_storage = "sheet"
-        if codec is not None and codec not in VALID_CODECS:
+        if resolved_codec is not None and resolved_codec not in VALID_CODECS:
             msg = (
-                f"Unsupported codec {codec!r}; expected one of {sorted(VALID_CODECS)}."
+                f"Unsupported codec {resolved_codec!r}; "
+                f"expected one of {sorted(VALID_CODECS)}."
             )
             raise InvalidModelConfigError(msg)
-        if codec is not None:
+        if resolved_codec is not None:
             if resolved_storage not in {None, "collection", "file"}:
                 msg = "codec= is only supported for storage='file' models."
                 raise InvalidModelConfigError(msg)
@@ -154,12 +181,12 @@ class GDMModel(BaseModel, metaclass=GDMModelMetaclass):
             cls.__gdm_mime_patterns__ = (mime,)
         else:
             cls.__gdm_mime_patterns__ = tuple(mime)
-        cls.__gdm_mapping__ = mapping
+        cls.__gdm_mapping__ = mapping if mapping is not None else cls.__gdm_mapping__
         cls.__gdm_schema_version__ = (
             None if schema_version is None else str(schema_version)
         )
         cls.__gdm_model_name__ = __gdm_model_name__ or cls.__name__
-        cls.__gdm_codec__ = codec
+        cls.__gdm_codec__ = resolved_codec
 
     @classmethod
     def __pydantic_init_subclass__(cls, **kwargs: Any) -> None:
@@ -461,6 +488,20 @@ class GDMModel(BaseModel, metaclass=GDMModelMetaclass):
         if state.locator is not None and state.persisted:
             return state.locator.record_key
         return self.gdm_assign_primary_key()
+
+
+class DriveObject(GDMModel, DriveObjectMixin, storage="collection"):
+    """Base model for a Drive folder collection of native files.
+
+    Combines :class:`GDMModel`, :class:`DriveObjectMixin`, and
+    ``storage="collection"`` so the common case needs no boilerplate::
+
+        class Asset(DriveObject, collection="Assets"):
+            pass
+
+    Subclasses inherit ``storage="collection"`` and may add ``collection=``,
+    ``mime=``, and application ``Field(metadata=...)`` columns.
+    """
 
 
 def utc_now_iso() -> str:

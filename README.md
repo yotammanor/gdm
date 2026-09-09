@@ -23,7 +23,7 @@ Center your app on a **mixed folder** already full of Google Docs, Slides, image
 > **`gdm`**:
 >
 > ```python
-> from gdm import GDM, GDMModel, DriveCollection, Session, select
+> from gdm import GDM, DriveObject, Field, select
 > ```
 
 **Documentation:** [yotammanor.github.io/gdm](https://yotammanor.github.io/gdm/)
@@ -83,21 +83,15 @@ under the Drive root. Tokens and local schema/index state stay local.
 ### 2. Define a collection model
 
 ```python
-from gdm import DriveObjectMixin, Field, GDMModel
+from gdm import DriveObject, Field
 
 
-class CampaignAsset(
-    GDMModel,
-    DriveObjectMixin,
-    storage="collection",
-    collection="Campaigns/Launch",
-    mapping="partial",
-):
+class CampaignAsset(DriveObject, collection="Campaigns/Launch"):
     campaign: str | None = Field(default=None, metadata="campaign")
     approved: bool = Field(default=False, metadata="approved")
 ```
 
-`DriveObjectMixin` adds standard read-only Drive fields (`drive_id`, `name`, `mime_type`, …) mapped with `Field(drive=...)`.
+`DriveObject` is `GDMModel` + `storage="collection"` + read-only Drive fields (`drive_id`, `name`, `mime_type`, …). A model with no application metadata at all is just `class Asset(DriveObject, collection="Assets"): pass`.
 
 ### 3. Connect, bind, and use the collection
 

@@ -12,7 +12,7 @@ from gdm.errors import (
     UnknownSourceFieldError,
 )
 from gdm.fields import Field, field_storage_target, get_gdm_field_metadata
-from gdm.model import DriveObjectMixin, GDMModel, utc_now_iso
+from gdm.model import DriveObject, DriveObjectMixin, GDMModel, utc_now_iso
 
 
 def test_table_conflicts_with_non_sheet_storage() -> None:
@@ -49,6 +49,84 @@ def test_subclass_without_mime_resets_patterns_when_not_in_dict() -> None:
 
     # Child re-runs __init_subclass__ with mime=None, which clears inherited patterns.
     assert Child.__gdm_mime_patterns__ == ()
+
+
+def test_subclass_inherits_storage_codec_and_mapping() -> None:
+    class Base(GDMModel, storage="collection", mapping="permissive"):
+        drive_id: str | None = Field(default=None, drive="id")
+
+    class Child(Base):
+        extra: str | None = Field(default=None, metadata="extra")
+
+    assert Child.gdm_storage() == "collection"
+    assert Child.is_collection_model()
+    assert Child.gdm_mapping() == "permissive"
+
+    class Doc(GDMModel, storage="file", codec="json"):
+        id: str = Field(primary_key=True)
+        title: str
+
+    class DocChild(Doc):
+        pass
+
+    assert DocChild.gdm_storage() == "file"
+    assert DocChild.gdm_codec() == "json"
+
+
+def test_subclass_may_override_inherited_storage() -> None:
+    class Base(GDMModel, storage="file", codec="json"):
+        id: str = Field(primary_key=True)
+        title: str
+
+    class Row(Base, storage="sheet"):
+        pass
+
+    assert Row.gdm_storage() == "sheet"
+    assert Row.gdm_codec() is None
+
+
+def test_resource_identity_is_not_inherited() -> None:
+    class Base(DriveObject, collection="Assets"):
+        pass
+
+    class Child(Base):
+        pass
+
+    assert Base.gdm_collection_path() == "Assets"
+    assert Child.gdm_collection_path() is None
+    assert Child.gdm_storage() == "collection"
+
+
+def test_inherited_mixin_fields_survive_deeper_subclassing() -> None:
+    """Regression: pydantic read class attrs through the FieldRef metaclass hook."""
+    from gdm.collection.collection import collection_model_with_mime
+
+    class Mixin(GDMModel, DriveObjectMixin, storage="collection"):
+        pass
+
+    class Nested(Mixin):
+        pass
+
+    for model in (Nested, collection_model_with_mime(Mixin, "image/*")):
+        info = model.model_fields["name"]
+        assert get_gdm_field_metadata(info).drive == "name"
+        assert info.default is None
+
+
+def test_drive_object_base_needs_no_storage_keyword() -> None:
+    class Asset(DriveObject, collection="Assets"):
+        campaign: str | None = Field(default=None, metadata="campaign")
+
+    assert Asset.gdm_storage() == "collection"
+    assert Asset.is_collection_model()
+    assert Asset.gdm_collection_path() == "Assets"
+    assert {"drive_id", "name", "mime_type", "campaign"} <= set(Asset.model_fields)
+    targets = {
+        name: field_storage_target(name, info, storage="collection")[0]
+        for name, info in Asset.model_fields.items()
+    }
+    assert targets["name"] == "drive"
+    assert targets["campaign"] == "metadata"
 
 
 def test_invalid_foreign_key_empty_segments() -> None:

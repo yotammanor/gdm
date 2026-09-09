@@ -6,6 +6,29 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+
+- `DriveObject` base class: `GDMModel` + `DriveObjectMixin` + `storage="collection"`.
+  A collection model is now `class Asset(DriveObject, collection="Assets"): pass`.
+- Storage shape (`storage`, `codec`, `mapping`) is inherited by subclasses instead of
+  being silently reset to `None`. Resource identity (`source`, `collection`,
+  `schema_version`) stays per-model and is not inherited.
+
+### Fixed
+
+- Drive field mappings were destroyed in any second-level subclass of a model using
+  `DriveObjectMixin`, because Pydantic reads field defaults through the class-expression
+  metaclass hook and received a `FieldRef` instead of the declared `FieldInfo`. This
+  corrupted `DriveCollection.where_mime()`, which builds dynamic subclasses at runtime.
+
+### Documentation
+
+- The landing-page example is now a four-line collection model instead of a script
+  carrying its own offline test harness; the seeded in-memory walkthrough moved to the
+  collections tutorial.
+- Enabled `pymdownx.emoji` so Material and Octicons icon shortcodes render as icons
+  rather than literal `:material-…:` text on the published site.
+
 ## [0.1.0] - 2026-09-09
 
 First public alpha release.
