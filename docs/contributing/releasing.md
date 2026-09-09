@@ -16,6 +16,12 @@ Configure a pending trusted publisher for the `google-drive-model` project:
 
 No long-lived PyPI token is stored in GitHub.
 
+## Release cadence
+
+User-visible changes do not sit unreleased. When a fix or behaviour change lands
+on `main`, cut the corresponding patch release rather than accumulating an
+`Unreleased` section, so the published package matches the documentation.
+
 ## Release checklist
 
 1. Update `version` in `pyproject.toml` and add dated notes to `CHANGELOG.md`.
