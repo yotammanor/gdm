@@ -31,9 +31,11 @@ client.bind(
 
 ## Example model
 
+<!-- fmt:off -->
 ```python
 --8<-- "models_inventory.py"
 ```
+<!-- fmt:on -->
 
 ### Preserve unknown columns
 

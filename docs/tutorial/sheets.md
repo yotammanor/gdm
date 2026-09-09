@@ -4,9 +4,11 @@ Bind a **Google Sheet worksheet** as a relational table while preserving columns
 
 ## 1. Define a model
 
+<!-- fmt:off -->
 ```python
 --8<-- "models_task.py"
 ```
+<!-- fmt:on -->
 
 | Class keyword | Purpose |
 | --- | --- |
@@ -30,9 +32,11 @@ client.bind(
 
 ## 3. Query metadata and rows
 
+<!-- fmt:off -->
 ```python
 --8<-- "query_sheet.py"
 ```
+<!-- fmt:on -->
 
 Field comparisons build a backend-independent expression tree. Sheet reads fetch **bounded ranges** and evaluate predicates locally.
 
@@ -58,9 +62,11 @@ with client.session(scan_limit=500) as session:
 
 ## 4. Create, update, delete
 
+<!-- fmt:off -->
 ```python
 --8<-- "crud_create.py"
 ```
+<!-- fmt:on -->
 
 ```python
 task = session.get(Task, "task-001")

@@ -51,9 +51,11 @@ from gdm import GDM, GDMModel, DriveCollection, Field, Session, select
 
 ## Minimal example
 
+<!-- fmt:off -->
 ```python
 --8<-- "quickstart_collection.py"
 ```
+<!-- fmt:on -->
 
 Run metadata queries offline without Google credentials (seeded in-memory backend):
 
